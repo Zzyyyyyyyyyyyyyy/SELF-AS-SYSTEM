@@ -228,7 +228,7 @@ class TimeMachine {
         const button = document.createElement('button');
         button.id = 'time-machine-btn';
         button.className = 'time-machine-btn';
-        button.innerHTML = '⏰ 时光机';
+        button.innerHTML = '⏰ Time Machine';
         button.addEventListener('click', () => this.activate());
 
         const header = document.querySelector('.calendar__header');

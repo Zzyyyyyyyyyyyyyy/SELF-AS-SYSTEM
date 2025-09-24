@@ -95,6 +95,15 @@
                         treasureGame = new CalendarGames.TreasureHunt();
                         treasureGame.start();
                         treasureBtn.classList.add('game-btn--active');
+                    } else if (treasureGame.isActive) {
+                        // If game is active, restart it
+                        treasureGame.reset();
+                        treasureGame.start();
+                    } else {
+                        // If game ended, start new game
+                        treasureGame.reset();
+                        treasureGame.start();
+                        treasureBtn.classList.add('game-btn--active');
                     }
                 });
 
@@ -102,6 +111,15 @@
                     if (!predictionGame) {
                         predictionGame = new CalendarGames.PredictionGame();
                         window.currentGame = predictionGame;
+                        predictionGame.start();
+                        predictionBtn.classList.add('game-btn--active');
+                    } else if (predictionGame.isActive) {
+                        // If game is active, restart it
+                        predictionGame.reset();
+                        predictionGame.start();
+                    } else {
+                        // If game ended, start new game
+                        predictionGame.reset();
                         predictionGame.start();
                         predictionBtn.classList.add('game-btn--active');
                     }

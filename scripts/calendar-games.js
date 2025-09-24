@@ -2,16 +2,22 @@ class TreasureHunt {
     constructor() {
         this.treasureDays = new Set();
         this.foundTreasures = new Set();
-        this.totalTreasures = 8;
+        this.totalTreasures = 5; // Reduced from 8 to 5 for easier gameplay
         this.isActive = false;
-        this.initTreasures();
+        this.hintsEnabled = false;
+        // Don't initialize treasures in constructor
     }
 
     initTreasures() {
+        // Clear previous treasures
+        this.treasureDays.clear();
+        this.foundTreasures.clear();
+
         const allDays = document.querySelectorAll('.calendar__day:not(.calendar__day--empty)');
+
         const indices = [];
 
-        while (indices.length < this.totalTreasures) {
+        while (indices.length < this.totalTreasures && indices.length < allDays.length) {
             const randomIndex = Math.floor(Math.random() * allDays.length);
             if (!indices.includes(randomIndex)) {
                 indices.push(randomIndex);
@@ -29,13 +35,15 @@ class TreasureHunt {
     }
 
     start() {
+        // Initialize treasures when game starts, not in constructor
+        this.initTreasures();
         this.isActive = true;
         this.showProgress();
         this.attachClickHandlers();
 
         const notification = document.createElement('div');
         notification.className = 'game-notification';
-        notification.innerHTML = '🎯 寻宝游戏开始！点击日期寻找隐藏的宝藏！';
+        notification.innerHTML = '🎯 Treasure Hunt Started! Click dates to find hidden treasures!';
         document.body.appendChild(notification);
 
         gsap.fromTo(notification,
@@ -76,7 +84,47 @@ class TreasureHunt {
             }
         } else if (!treasureId) {
             this.showMissAnimation(day);
+            // Give hint after 3 misses
+            if (this.getMissCount() >= 3 && !this.hintsEnabled) {
+                this.enableHints();
+            }
         }
+    }
+
+    getMissCount() {
+        // Simple counter for missed clicks
+        this.missCount = (this.missCount || 0) + 1;
+        return this.missCount;
+    }
+
+    enableHints() {
+        this.hintsEnabled = true;
+        // Add warm/cold hints to treasure days
+        document.querySelectorAll('.calendar__day').forEach(day => {
+            if (day.dataset.treasureId && !this.foundTreasures.has(day.dataset.treasureId)) {
+                day.classList.add('treasure-hint');
+            }
+        });
+
+        // Show hint notification
+        const hint = document.createElement('div');
+        hint.className = 'game-notification';
+        hint.innerHTML = '💡 Hint enabled! Look for the glowing dates!';
+        document.body.appendChild(hint);
+
+        gsap.fromTo(hint,
+            { y: -100, opacity: 0 },
+            { y: 20, opacity: 1, duration: 0.5, ease: 'bounce.out' }
+        );
+
+        setTimeout(() => {
+            gsap.to(hint, {
+                y: -100,
+                opacity: 0,
+                duration: 0.3,
+                onComplete: () => hint.remove()
+            });
+        }, 3000);
     }
 
     createCoinExplosion(element) {
@@ -99,7 +147,7 @@ class TreasureHunt {
 
         const scorePopup = document.createElement('div');
         scorePopup.className = 'score-popup';
-        scorePopup.innerHTML = '+100 金币!';
+        scorePopup.innerHTML = '+100 Coins!';
         scorePopup.style.position = 'fixed';
         scorePopup.style.left = rect.left + rect.width / 2 + 'px';
         scorePopup.style.top = rect.top - 20 + 'px';
@@ -162,7 +210,7 @@ class TreasureHunt {
         const progressBar = document.getElementById('treasure-progress');
         if (progressBar) {
             progressBar.innerHTML = `
-                <span class="treasure-progress__label">🏆 宝藏收集</span>
+                <span class="treasure-progress__label">🏆 Treasures Found</span>
                 <span class="treasure-progress__count">${this.foundTreasures.size} / ${this.totalTreasures}</span>
                 <div class="treasure-progress__bar">
                     <div class="treasure-progress__fill" style="width: ${(this.foundTreasures.size / this.totalTreasures) * 100}%"></div>
@@ -178,9 +226,9 @@ class TreasureHunt {
         const completion = document.createElement('div');
         completion.className = 'game-completion';
         completion.innerHTML = `
-            <h2>🎉 恭喜！</h2>
-            <p>你找到了所有宝藏！</p>
-            <p>🌈 解锁彩虹主题！</p>
+            <h2>🎉 Congratulations!</h2>
+            <p>You found all the treasures!</p>
+            <p>🌈 Rainbow theme unlocked!</p>
         `;
         document.body.appendChild(completion);
 
@@ -215,6 +263,33 @@ class TreasureHunt {
                 delay: index * 0.1,
                 ease: 'power2.inOut'
             });
+        });
+    }
+
+    reset() {
+        // Clear game state
+        this.treasureDays.clear();
+        this.foundTreasures.clear();
+        this.isActive = false;
+        this.hintsEnabled = false;
+        this.missCount = 0;
+
+        // Remove progress bar
+        const progressBar = document.getElementById('treasure-progress');
+        if (progressBar) {
+            progressBar.remove();
+        }
+
+        // Remove all treasure markers and hints
+        document.querySelectorAll('.calendar__day').forEach(day => {
+            delete day.dataset.treasureId;
+            day.classList.remove('treasure-found', 'treasure-hint');
+            day.style.background = '';
+        });
+
+        // Reset calendar month backgrounds
+        document.querySelectorAll('.calendar__month').forEach(month => {
+            month.style.background = '';
         });
     }
 }
@@ -306,17 +381,35 @@ class PredictionGame {
         document.body.appendChild(modal);
 
         // Add event listeners after DOM is created
-        document.getElementById('prediction-submit').addEventListener('click', () => {
-            const input = document.getElementById('prediction-input');
-            const guess = parseFloat(input.value);
-            if (!isNaN(guess)) {
-                this.checkPrediction(actualSpending, modal, day, guess);
+        const submitBtn = document.getElementById('prediction-submit');
+        const cancelBtn = document.getElementById('prediction-cancel');
+        const inputField = document.getElementById('prediction-input');
+
+        // Store reference to this for use in event handlers
+        const self = this;
+
+        submitBtn.addEventListener('click', function() {
+            const guess = parseFloat(inputField.value);
+            if (!isNaN(guess) && guess >= 0) {
+                self.checkPrediction(actualSpending, modal, day, guess);
+            } else {
+                alert('Please enter a valid amount!');
             }
         });
 
-        document.getElementById('prediction-cancel').addEventListener('click', () => {
+        cancelBtn.addEventListener('click', function() {
             modal.remove();
         });
+
+        // Allow Enter key to submit
+        inputField.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                submitBtn.click();
+            }
+        });
+
+        // Focus on input field
+        inputField.focus();
 
         gsap.fromTo(modal,
             { scale: 0, opacity: 0 },
@@ -332,24 +425,30 @@ class PredictionGame {
         if (difference < 5) {
             message = 'Perfect!';
             emoji = '🎯';
-            this.createFireworks();
             this.score += 100;
+            // Show result first, then fireworks
+            this.revealDay(day);
+            this.showResult(message, emoji, accuracy, actual, guess);
+            setTimeout(() => this.createFireworks(), 500);
         } else if (difference < 20) {
             message = 'Very Close!';
             emoji = '👍';
             this.score += 50;
+            this.revealDay(day);
+            this.showResult(message, emoji, accuracy, actual, guess);
         } else if (difference < 50) {
             message = 'Almost There!';
             emoji = '😊';
             this.score += 20;
+            this.revealDay(day);
+            this.showResult(message, emoji, accuracy, actual, guess);
         } else {
             message = 'Keep Trying!';
             emoji = '💪';
             this.score += 5;
+            this.revealDay(day);
+            this.showResult(message, emoji, accuracy, actual, guess);
         }
-
-        this.revealDay(day);
-        this.showResult(message, emoji, accuracy, actual, guess);
 
         modal.remove();
     }
@@ -387,18 +486,21 @@ class PredictionGame {
         document.body.appendChild(result);
 
         gsap.fromTo(result,
-            { y: -100, opacity: 0 },
+            { scale: 0, opacity: 0, rotation: -10 },
             {
-                y: window.innerHeight / 2 - 50,
+                scale: 1,
                 opacity: 1,
-                duration: 0.5,
-                ease: 'bounce.out',
+                rotation: 0,
+                duration: 0.6,
+                ease: 'back.out(1.7)',
                 onComplete: () => {
                     setTimeout(() => {
                         gsap.to(result, {
                             scale: 0,
                             opacity: 0,
-                            duration: 0.3,
+                            rotation: 10,
+                            duration: 0.4,
+                            ease: 'back.in(1.7)',
                             onComplete: () => result.remove()
                         });
                     }, 3000); // Show result for 3 seconds
@@ -450,9 +552,9 @@ class PredictionGame {
         const instructions = document.createElement('div');
         instructions.className = 'game-instructions';
         instructions.innerHTML = `
-            <h3>🎲 消费预测游戏</h3>
-            <p>点击神秘的日期，猜测那天的消费金额！</p>
-            <p>越接近实际金额，得分越高！</p>
+            <h3>🎲 Prediction Game</h3>
+            <p>Click on mystery dates and guess the spending amount!</p>
+            <p>The closer to the actual amount, the higher your score!</p>
         `;
         document.body.appendChild(instructions);
 
@@ -469,6 +571,31 @@ class PredictionGame {
                 onComplete: () => instructions.remove()
             });
         }, 4000);
+    }
+
+    reset() {
+        // Clear game state
+        this.hiddenDays.clear();
+        this.predictions.clear();
+        this.score = 0;
+        this.isActive = false;
+
+        // Remove all mystery markers and restore original day appearance
+        document.querySelectorAll('.calendar__day').forEach(day => {
+            const mysteryIcon = day.querySelector('.mystery-icon');
+            if (mysteryIcon) {
+                mysteryIcon.remove();
+            }
+
+            // Restore original appearance if it was hidden
+            if (day.dataset.originalBg) {
+                day.style.backgroundColor = day.dataset.originalBg;
+                day.style.opacity = day.dataset.originalOpacity;
+                delete day.dataset.originalBg;
+                delete day.dataset.originalOpacity;
+                delete day.dataset.actualSpending;
+            }
+        });
     }
 }
 
