@@ -152,14 +152,14 @@ class RibbonRenderer {
                             Math.pow(hPoint.y - vPoint.y, 2)
                         );
 
-                        if (distance < 30) {
+                        if (distance < 50) {
                             this.intersections.push({
                                 x: (hPoint.x + vPoint.x) / 2,
                                 y: (hPoint.y + vPoint.y) / 2,
                                 color1: hRibbon.color,
                                 color2: vRibbon.color,
                                 ribbons: [hRibbon, vRibbon],
-                                strength: 1 - (distance / 30)
+                                strength: Math.max(0.5, 1 - (distance / 50))
                             });
                         }
                     }
@@ -175,30 +175,52 @@ class RibbonRenderer {
             const colors2 = this.parseGradient(color2);
 
             const pulsePhase = time * 0.003 + i * 0.15;
-            const pulseSize = (6 + Math.sin(pulsePhase) * 3) * strength;
-            const pulseAlpha = (0.5 + Math.sin(pulsePhase) * 0.3) * strength;
+            const pulseSize = 12 + Math.sin(pulsePhase) * 5;
+            const pulseAlpha = 0.85 + Math.sin(pulsePhase) * 0.15;
 
             this.ctx.save();
-            this.ctx.globalAlpha = pulseAlpha;
 
-            const sparkleGradient = this.ctx.createRadialGradient(x, y, 0, x, y, pulseSize * 2.5);
-            sparkleGradient.addColorStop(0, colors1.end);
-            sparkleGradient.addColorStop(0.4, colors2.start);
+            const outerGlow = this.ctx.createRadialGradient(x, y, 0, x, y, pulseSize * 3);
+            outerGlow.addColorStop(0, this.addAlpha(colors1.end, pulseAlpha * 0.6));
+            outerGlow.addColorStop(0.3, this.addAlpha(colors2.start, pulseAlpha * 0.4));
+            outerGlow.addColorStop(1, 'transparent');
+
+            this.ctx.fillStyle = outerGlow;
+            this.ctx.shadowBlur = 50;
+            this.ctx.shadowColor = colors1.end;
+            this.ctx.beginPath();
+            this.ctx.arc(x, y, pulseSize * 2, 0, Math.PI * 2);
+            this.ctx.fill();
+
+            this.ctx.globalAlpha = pulseAlpha;
+            const sparkleGradient = this.ctx.createRadialGradient(x, y, 0, x, y, pulseSize * 1.5);
+            sparkleGradient.addColorStop(0, colors2.end);
+            sparkleGradient.addColorStop(0.5, colors1.start);
             sparkleGradient.addColorStop(1, 'transparent');
 
             this.ctx.fillStyle = sparkleGradient;
-            this.ctx.shadowBlur = 35;
+            this.ctx.shadowBlur = 40;
             this.ctx.shadowColor = colors2.end;
-
             this.ctx.beginPath();
             this.ctx.arc(x, y, pulseSize, 0, Math.PI * 2);
             this.ctx.fill();
 
-            this.ctx.globalAlpha = pulseAlpha * 1.2;
-            this.ctx.beginPath();
-            this.ctx.arc(x, y, pulseSize * 0.4, 0, Math.PI * 2);
+            this.ctx.globalAlpha = 1;
             this.ctx.fillStyle = '#ffffff';
+            this.ctx.shadowBlur = 20;
+            this.ctx.shadowColor = '#ffffff';
+            this.ctx.beginPath();
+            this.ctx.arc(x, y, pulseSize * 0.35, 0, Math.PI * 2);
             this.ctx.fill();
+
+            if (Math.sin(pulsePhase * 2) > 0.7) {
+                this.ctx.globalAlpha = 0.8;
+                this.ctx.strokeStyle = '#ffffff';
+                this.ctx.lineWidth = 2;
+                this.ctx.beginPath();
+                this.ctx.arc(x, y, pulseSize * 1.2, 0, Math.PI * 2);
+                this.ctx.stroke();
+            }
 
             this.ctx.restore();
         });
