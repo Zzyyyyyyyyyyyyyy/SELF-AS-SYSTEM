@@ -63,7 +63,7 @@ canvas.addEventListener('ribbonHover', (e) => {
         const ribbon2 = ribbons[1]?.videoData;
 
         tooltip.innerHTML = `
-            <div class="ribbon-tooltip__title">交织点</div>
+            <div class="ribbon-tooltip__title">Intersection</div>
             <div class="ribbon-tooltip__meta">
                 📹 ${ribbon1?.title || 'Ribbon 1'}<br>
                 📁 ${ribbon2?.title || 'Ribbon 2'}
