@@ -1,0 +1,16 @@
+node_modules/
+dist/
+build/
+.env
+.env.local
+.env.production
+*.log
+coverage/
+.vscode/
+.idea/
+.DS_Store
+*.swp
+*.swo
+.cache/
+playwright-report/
+test-results/
