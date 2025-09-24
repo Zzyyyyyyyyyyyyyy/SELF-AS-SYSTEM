@@ -57,68 +57,60 @@
                 </div>
             </div>
         </div>
+
+        <div class="calendar__game-section">
+        <div class="calendar__game-header">
+            <span class="calendar__game-title">🎮 Interactive Features</span>
+        </div>
+        <div class="calendar__game-controls">
+            <button id="treasure-hunt-btn" class="game-btn game-btn--treasure">
+                🏆 Treasure Hunt
+            </button>
+            <button id="prediction-game-btn" class="game-btn game-btn--prediction">
+                🎲 Prediction Game
+            </button>
+        </div>
     </div>
 
     <div id="tooltip" class="calendar__tooltip" style="display: none;"></div>
-
-    <div class="game-controls">
-        <button id="treasure-hunt-btn" class="game-btn game-btn--treasure">
-            🏆 寻宝游戏
-        </button>
-        <button id="prediction-game-btn" class="game-btn game-btn--prediction">
-            🎲 预测游戏
-        </button>
-        <button id="rainbow-trail-btn" class="game-btn game-btn--rainbow">
-            🌈 彩虹轨迹
-        </button>
-    </div>
 
     <script src="scripts/common.js"></script>
     <script src="scripts/page-1.js"></script>
     <script src="scripts/calendar-games.js"></script>
     <script src="scripts/calendar-effects.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const treasureBtn = document.getElementById('treasure-hunt-btn');
-            const predictionBtn = document.getElementById('prediction-game-btn');
-            const rainbowBtn = document.getElementById('rainbow-trail-btn');
+        // Wait for calendar to be fully loaded before initializing games
+        window.addEventListener('load', () => {
+            // Small delay to ensure calendar is rendered
+            setTimeout(() => {
+                const treasureBtn = document.getElementById('treasure-hunt-btn');
+                const predictionBtn = document.getElementById('prediction-game-btn');
 
-            let treasureGame = null;
-            let predictionGame = null;
-            let rainbowTrail = null;
-            let timeMachine = null;
+                let treasureGame = null;
+                let predictionGame = null;
+                let timeMachine = null;
 
-            treasureBtn.addEventListener('click', () => {
-                if (!treasureGame) {
-                    treasureGame = new CalendarGames.TreasureHunt();
-                    treasureGame.start();
-                    treasureBtn.classList.add('game-btn--active');
-                }
-            });
+                treasureBtn.addEventListener('click', () => {
+                    if (!treasureGame) {
+                        treasureGame = new CalendarGames.TreasureHunt();
+                        treasureGame.start();
+                        treasureBtn.classList.add('game-btn--active');
+                    }
+                });
 
-            predictionBtn.addEventListener('click', () => {
-                if (!predictionGame) {
-                    predictionGame = new CalendarGames.PredictionGame();
-                    window.currentGame = predictionGame;
-                    predictionGame.start();
-                    predictionBtn.classList.add('game-btn--active');
-                }
-            });
+                predictionBtn.addEventListener('click', () => {
+                    if (!predictionGame) {
+                        predictionGame = new CalendarGames.PredictionGame();
+                        window.currentGame = predictionGame;
+                        predictionGame.start();
+                        predictionBtn.classList.add('game-btn--active');
+                    }
+                });
 
-            rainbowBtn.addEventListener('click', () => {
-                if (!rainbowTrail) {
-                    rainbowTrail = new CalendarEffects.RainbowTrail();
-                    rainbowTrail.init();
-                    rainbowBtn.classList.add('game-btn--active');
-                } else {
-                    rainbowTrail.destroy();
-                    rainbowTrail = null;
-                    rainbowBtn.classList.remove('game-btn--active');
-                }
-            });
-
-            timeMachine = new CalendarEffects.TimeMachine();
-            timeMachine.init();
+                // Initialize time machine
+                timeMachine = new CalendarEffects.TimeMachine();
+                timeMachine.init();
+            }, 1000); // Wait 1 second for calendar animation to complete
         });
     </script>
 </body>

@@ -297,50 +297,59 @@ class PredictionGame {
         modal.className = 'prediction-modal';
         modal.innerHTML = `
             <div class="prediction-modal__content">
-                <h3>💭 猜猜这天花了多少？</h3>
-                <input type="number" id="prediction-input" placeholder="输入金额 $" step="0.01">
-                <button onclick="window.currentGame.checkPrediction(${actualSpending}, this.parentElement.parentElement)">确认</button>
-                <button onclick="this.parentElement.parentElement.remove()">取消</button>
+                <h3>💭 Guess the spending amount</h3>
+                <input type="number" id="prediction-input" placeholder="Enter amount $" step="0.01">
+                <button id="prediction-submit">Submit</button>
+                <button id="prediction-cancel">Cancel</button>
             </div>
         `;
         document.body.appendChild(modal);
+
+        // Add event listeners after DOM is created
+        document.getElementById('prediction-submit').addEventListener('click', () => {
+            const input = document.getElementById('prediction-input');
+            const guess = parseFloat(input.value);
+            if (!isNaN(guess)) {
+                this.checkPrediction(actualSpending, modal, day, guess);
+            }
+        });
+
+        document.getElementById('prediction-cancel').addEventListener('click', () => {
+            modal.remove();
+        });
 
         gsap.fromTo(modal,
             { scale: 0, opacity: 0 },
             { scale: 1, opacity: 1, duration: 0.3, ease: 'back.out(1.7)' }
         );
-
-        window.currentPredictionDay = day;
     }
 
-    checkPrediction(actual, modal) {
-        const input = modal.querySelector('#prediction-input');
-        const guess = parseFloat(input.value);
+    checkPrediction(actual, modal, day, guess) {
         const difference = Math.abs(actual - guess);
         const accuracy = Math.max(0, 100 - difference);
 
         let message, emoji;
         if (difference < 5) {
-            message = '完美！';
+            message = 'Perfect!';
             emoji = '🎯';
             this.createFireworks();
             this.score += 100;
         } else if (difference < 20) {
-            message = '非常接近！';
+            message = 'Very Close!';
             emoji = '👍';
             this.score += 50;
         } else if (difference < 50) {
-            message = '差一点！';
+            message = 'Almost There!';
             emoji = '😊';
             this.score += 20;
         } else {
-            message = '继续努力！';
+            message = 'Keep Trying!';
             emoji = '💪';
             this.score += 5;
         }
 
-        this.revealDay(window.currentPredictionDay);
-        this.showResult(message, emoji, accuracy);
+        this.revealDay(day);
+        this.showResult(message, emoji, accuracy, actual, guess);
 
         modal.remove();
     }
@@ -364,13 +373,16 @@ class PredictionGame {
         });
     }
 
-    showResult(message, emoji, accuracy) {
+    showResult(message, emoji, accuracy, actual, guess) {
         const result = document.createElement('div');
         result.className = 'prediction-result';
         result.innerHTML = `
             <span class="prediction-result__emoji">${emoji}</span>
             <span class="prediction-result__message">${message}</span>
-            <span class="prediction-result__accuracy">准确度: ${accuracy.toFixed(0)}%</span>
+            <span class="prediction-result__values">
+                Your guess: $${guess.toFixed(2)} | Actual: $${actual.toFixed(2)}
+            </span>
+            <span class="prediction-result__accuracy">Accuracy: ${accuracy.toFixed(0)}%</span>
         `;
         document.body.appendChild(result);
 
@@ -389,7 +401,7 @@ class PredictionGame {
                             duration: 0.3,
                             onComplete: () => result.remove()
                         });
-                    }, 2000);
+                    }, 3000); // Show result for 3 seconds
                 }
             }
         );

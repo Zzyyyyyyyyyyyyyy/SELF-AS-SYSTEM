@@ -218,25 +218,44 @@
     flex-direction: column;
     gap: 1.5rem;
   }
+
+  .calendar__game-controls {
+    flex-direction: column;
+  }
+
+  .game-btn {
+    width: 100%;
+  }
 }
 
 /* ==========================================
    GAME CONTROLS
    ========================================== */
 
-.game-controls {
-  position: fixed;
-  bottom: 30px;
-  left: 50%;
-  transform: translateX(-50%);
+.calendar__game-section {
+  margin-top: 3rem;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.calendar__game-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.calendar__game-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #8b5cf6;
+}
+
+.calendar__game-controls {
   display: flex;
+  justify-content: center;
   gap: 1rem;
-  z-index: 1000;
-  padding: 1rem;
-  background: rgba(10, 10, 15, 0.9);
-  backdrop-filter: blur(10px);
-  border-radius: 50px;
-  border: 1px solid rgba(99, 102, 241, 0.3);
+  flex-wrap: wrap;
 }
 
 .game-btn {
