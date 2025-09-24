@@ -1,6 +1,4 @@
-// youtube-data.js
-
-export const youtubeData = {
+{
   meta: {
     owner: {
       id: "z-main",
@@ -216,4 +214,4 @@ export const youtubeData = {
       "Glitch Stream": ["vid-gm-01", "vid-gm-02"]
     }
   }
-};
+}

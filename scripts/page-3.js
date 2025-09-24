@@ -1,473 +1,171 @@
-/**
- * Page 3 - Contact Page Animations
- * GSAP Timeline animations and form interactions
- */
+const canvas = document.getElementById('ribbon-canvas');
+const tooltip = document.getElementById('ribbonTooltip');
+const dataPanels = document.querySelectorAll('.data-panel');
 
-// ==========================================
-// GSAP ANIMATIONS
-// ==========================================
+const ribbonRenderer = new RibbonRenderer(canvas);
 
-gsap.registerPlugin(ScrollTrigger);
+const colorMap = {
+    'pl-futurescape': 'linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%)',
+    'pl-glitch': 'linear-gradient(135deg, #ec4899 0%, #f43f5e 100%)',
+    'pl-dream': 'linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%)',
+    'pl-sensor': 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
+    'pl-web3d': 'linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)',
+    'pl-ai-gen': 'linear-gradient(135deg, #ef4444 0%, #f87171 100%)'
+};
 
-// ==========================================
-// CONTACT HERO ANIMATIONS
-// ==========================================
+const playlists = youtubeData.playlists;
+const videos = youtubeData.videos;
 
-function initContactHero() {
-    const timeline = gsap.timeline({ defaults: { ease: 'power3.out' } });
+const isMobile = window.innerWidth <= 768;
 
-    timeline.from('.contact-hero__label', {
-        y: 30,
-        opacity: 0,
-        duration: 0.8
-    });
+videos.forEach((video, index) => {
+    const y = ((index + 1) / (videos.length + 1)) * window.innerHeight;
 
-    timeline.from('.contact-hero__title', {
-        y: 40,
-        opacity: 0,
-        duration: 0.8
-    }, '-=0.4');
-
-    timeline.from('.contact-hero__subtitle', {
-        y: 30,
-        opacity: 0,
-        duration: 0.8
-    }, '-=0.4');
-}
-
-// ==========================================
-// AURORA BACKGROUND ANIMATION
-// ==========================================
-
-function initAuroraEffect() {
-    const aurora = document.querySelector('.contact-hero__aurora');
-
-    if (aurora) {
-        gsap.to(aurora, {
-            background: `
-                radial-gradient(ellipse at top, rgba(139, 92, 246, 0.2), transparent 50%),
-                radial-gradient(ellipse at bottom, rgba(99, 102, 241, 0.2), transparent 50%)
-            `,
-            duration: 8,
-            repeat: -1,
-            yoyo: true,
-            ease: 'sine.inOut'
-        });
-    }
-}
-
-// ==========================================
-// FORM ANIMATIONS
-// ==========================================
-
-function initFormAnimations() {
-    // Entrance animation
-    gsap.from('.contact-form', {
-        scrollTrigger: {
-            trigger: '.contact',
-            start: 'top 70%',
-            toggleActions: 'play none none reverse'
-        },
-        x: -60,
-        opacity: 0,
-        duration: 1,
-        ease: 'power3.out'
-    });
-
-    // Form group animations
-    const formGroups = document.querySelectorAll('.form-group');
-
-    gsap.from(formGroups, {
-        scrollTrigger: {
-            trigger: '.contact-form',
-            start: 'top 70%',
-            toggleActions: 'play none none reverse'
-        },
-        y: 30,
-        opacity: 0,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: 'power3.out'
-    });
-
-    // Input focus animations
-    formGroups.forEach(group => {
-        const input = group.querySelector('.form-group__input, .form-group__textarea');
-        const label = group.querySelector('.form-group__label');
-        const border = group.querySelector('.form-group__border');
-
-        if (input && label && border) {
-            input.addEventListener('focus', () => {
-                gsap.to(label, {
-                    color: '#6366f1',
-                    y: -3,
-                    duration: 0.3,
-                    ease: 'power2.out'
-                });
-
-                gsap.to(border, {
-                    opacity: 1,
-                    scaleX: 1,
-                    duration: 0.3,
-                    ease: 'power2.out'
-                });
-            });
-
-            input.addEventListener('blur', () => {
-                if (!input.value) {
-                    gsap.to(label, {
-                        color: '#a1a1aa',
-                        y: 0,
-                        duration: 0.3,
-                        ease: 'power2.out'
-                    });
-                }
-
-                gsap.to(border, {
-                    opacity: 0,
-                    scaleX: 0,
-                    duration: 0.3,
-                    ease: 'power2.out'
-                });
-            });
+    ribbonRenderer.addRibbon({
+        id: `video-${video.id}`,
+        type: 'horizontal',
+        position: y,
+        color: colorMap[video.playlistId] || 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+        width: Math.max(20, Math.min(60, 25 + (video.stats.views / 1000))),
+        videoData: {
+            title: video.title,
+            views: video.stats.views,
+            likes: video.stats.likes,
+            duration: video.duration
         }
     });
-}
+});
 
-// ==========================================
-// INFO CARDS ANIMATIONS
-// ==========================================
+playlists.forEach((playlist, index) => {
+    const x = ((index + 1) / (playlists.length + 1)) * window.innerWidth;
+    const playlistVideos = videos.filter(v => v.playlistId === playlist.id);
+    const totalViews = playlistVideos.reduce((sum, v) => sum + v.stats.views, 0);
 
-function initInfoCards() {
-    gsap.from('.info-card', {
-        scrollTrigger: {
-            trigger: '.contact__info',
-            start: 'top 70%',
-            toggleActions: 'play none none reverse'
-        },
-        x: 60,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.15,
-        ease: 'power3.out'
+    ribbonRenderer.addRibbon({
+        id: `playlist-${playlist.id}`,
+        type: 'vertical',
+        position: x,
+        color: colorMap[playlist.id] || 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+        width: Math.max(25, 30 + (playlistVideos.length * 6)),
+        videoData: {
+            title: playlist.title,
+            videoCount: playlistVideos.length,
+            totalViews: totalViews,
+            description: playlist.description
+        }
     });
+});
 
-    // Card interactions
-    document.querySelectorAll('.info-card').forEach(card => {
-        const icon = card.querySelector('.info-card__icon');
-        const glow = card.querySelector('.info-card__glow');
+canvas.addEventListener('ribbonHover', (e) => {
+    if (e.detail) {
+        const { ribbons, x, y } = e.detail;
+        const ribbon1 = ribbons[0]?.videoData;
+        const ribbon2 = ribbons[1]?.videoData;
 
-        card.addEventListener('mouseenter', () => {
-            gsap.to(card, {
-                x: 10,
-                duration: 0.3,
-                ease: 'power2.out'
-            });
-
-            gsap.to(icon, {
-                scale: 1.15,
-                rotation: 5,
-                duration: 0.3,
-                ease: 'back.out(1.7)'
-            });
-
-            gsap.to(glow, {
-                opacity: 1,
-                scale: 1.2,
-                duration: 0.5
-            });
-        });
-
-        card.addEventListener('mouseleave', () => {
-            gsap.to(card, {
-                x: 0,
-                duration: 0.3,
-                ease: 'power2.out'
-            });
-
-            gsap.to(icon, {
-                scale: 1,
-                rotation: 0,
-                duration: 0.3,
-                ease: 'power2.out'
-            });
-
-            gsap.to(glow, {
-                opacity: 0,
-                scale: 1,
-                duration: 0.5
-            });
-        });
-    });
-}
-
-// ==========================================
-// SOCIAL LINKS ANIMATIONS
-// ==========================================
-
-function initSocialLinks() {
-    const socialLinks = document.querySelectorAll('.social-link');
-
-    socialLinks.forEach((link, index) => {
-        link.addEventListener('mouseenter', () => {
-            gsap.to(link, {
-                y: -5,
-                scale: 1.1,
-                duration: 0.3,
-                ease: 'back.out(1.7)'
-            });
-
-            // Ripple effect
-            const ripple = document.createElement('div');
-            ripple.style.cssText = `
-                position: absolute;
-                inset: 0;
-                border-radius: inherit;
-                background: radial-gradient(circle, rgba(99, 102, 241, 0.3), transparent);
-                animation: social-ripple 0.6s ease-out;
-                pointer-events: none;
-            `;
-            link.appendChild(ripple);
-
-            setTimeout(() => ripple.remove(), 600);
-        });
-
-        link.addEventListener('mouseleave', () => {
-            gsap.to(link, {
-                y: 0,
-                scale: 1,
-                duration: 0.3,
-                ease: 'power2.out'
-            });
-        });
-    });
-
-    // Add ripple animation
-    if (!document.getElementById('social-ripple-styles')) {
-        const style = document.createElement('style');
-        style.id = 'social-ripple-styles';
-        style.textContent = `
-            @keyframes social-ripple {
-                0% {
-                    transform: scale(0);
-                    opacity: 1;
-                }
-                100% {
-                    transform: scale(2);
-                    opacity: 0;
-                }
-            }
+        tooltip.innerHTML = `
+            <div class="ribbon-tooltip__title">交织点</div>
+            <div class="ribbon-tooltip__meta">
+                📹 ${ribbon1?.title || 'Ribbon 1'}<br>
+                📁 ${ribbon2?.title || 'Ribbon 2'}
+            </div>
         `;
-        document.head.appendChild(style);
+
+        tooltip.style.left = `${x + 20}px`;
+        tooltip.style.top = `${y - 30}px`;
+        tooltip.classList.add('visible');
+    } else {
+        tooltip.classList.remove('visible');
     }
-}
+});
 
-// ==========================================
-// FORM SUBMISSION
-// ==========================================
+const modal = document.getElementById('videoModal');
+const modalBody = document.getElementById('modalBody');
+const closeModal = document.getElementById('closeModal');
 
-function initFormSubmission() {
-    const form = document.getElementById('contactForm');
+function openModal(playlist) {
+    const playlistVideos = videos.filter(v => v.playlistId === playlist.id);
 
-    if (form) {
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            const submitButton = form.querySelector('button[type="submit"]');
-            const buttonText = submitButton.querySelector('.btn__text');
-            const originalText = buttonText.textContent;
-
-            // Disable button and show loading
-            submitButton.disabled = true;
-            buttonText.textContent = 'Sending...';
-
-            // Animate button
-            gsap.to(submitButton, {
-                scale: 0.95,
-                duration: 0.2
-            });
-
-            // Simulate form submission (replace with actual API call)
-            await new Promise(resolve => setTimeout(resolve, 2000));
-
-            // Success animation
-            gsap.to(submitButton, {
-                scale: 1,
-                duration: 0.3,
-                ease: 'back.out(1.7)'
-            });
-
-            buttonText.textContent = 'Message Sent!';
-
-            // Show success message
-            showSuccessMessage();
-
-            // Reset form
-            setTimeout(() => {
-                form.reset();
-                buttonText.textContent = originalText;
-                submitButton.disabled = false;
-            }, 3000);
-        });
-    }
-}
-
-// ==========================================
-// SUCCESS MESSAGE
-// ==========================================
-
-function showSuccessMessage() {
-    const message = document.createElement('div');
-    message.className = 'success-message';
-    message.innerHTML = `
-        <div class="success-message__content">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <polyline points="22 4 12 14.01 9 11.01" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <span>Thank you! We'll be in touch soon.</span>
+    modalBody.innerHTML = `
+        <h2 class="video-modal__title">${playlist.title}</h2>
+        <p class="video-modal__description">${playlist.description}</p>
+        <div class="video-modal__tags">
+            ${playlist.tags.map(tag => `<span class="video-modal__tag">${tag}</span>`).join('')}
+        </div>
+        <div class="video-modal__videos">
+            ${playlistVideos.map(video => `
+                <div class="video-item">
+                    <div class="video-item__title">${video.title}</div>
+                    <div class="video-item__meta">
+                        ${video.duration} • ${(video.stats.views / 1000).toFixed(1)}K views •
+                        ${video.stats.likes} likes
+                    </div>
+                </div>
+            `).join('')}
         </div>
     `;
 
-    message.style.cssText = `
-        position: fixed;
-        bottom: 2rem;
-        right: 2rem;
-        background: linear-gradient(135deg, #6366f1, #8b5cf6);
-        color: white;
-        padding: 1rem 1.5rem;
-        border-radius: 0.75rem;
-        box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
-        z-index: 10000;
-        opacity: 0;
-        transform: translateY(20px);
-    `;
-
-    document.body.appendChild(message);
-
-    // Animate in
-    gsap.to(message, {
-        opacity: 1,
-        y: 0,
-        duration: 0.5,
+    modal.classList.add('active');
+    gsap.from('.video-modal__content', {
+        scale: 0.8,
+        opacity: 0,
+        duration: 0.4,
         ease: 'back.out(1.7)'
     });
+}
 
-    // Animate out
-    gsap.to(message, {
+closeModal.addEventListener('click', () => {
+    gsap.to('.video-modal__content', {
+        scale: 0.8,
         opacity: 0,
-        y: -20,
-        duration: 0.5,
-        delay: 3,
+        duration: 0.3,
         ease: 'power2.in',
-        onComplete: () => message.remove()
-    });
-
-    // Add styles for success message
-    if (!document.getElementById('success-message-styles')) {
-        const style = document.createElement('style');
-        style.id = 'success-message-styles';
-        style.textContent = `
-            .success-message__content {
-                display: flex;
-                align-items: center;
-                gap: 0.75rem;
-                font-weight: 500;
-            }
-        `;
-        document.head.appendChild(style);
-    }
-}
-
-// ==========================================
-// INPUT VALIDATION ANIMATIONS
-// ==========================================
-
-function initInputValidation() {
-    const inputs = document.querySelectorAll('.form-group__input, .form-group__textarea');
-
-    inputs.forEach(input => {
-        input.addEventListener('invalid', (e) => {
-            e.preventDefault();
-
-            const formGroup = input.closest('.form-group');
-
-            gsap.to(formGroup, {
-                x: -10,
-                duration: 0.1,
-                repeat: 3,
-                yoyo: true,
-                ease: 'power2.out'
-            });
-
-            gsap.to(input, {
-                borderColor: '#ef4444',
-                duration: 0.3
-            });
-        });
-
-        input.addEventListener('input', () => {
-            if (input.validity.valid) {
-                gsap.to(input, {
-                    borderColor: '#6366f1',
-                    duration: 0.3
-                });
-            }
-        });
-    });
-}
-
-// ==========================================
-// PARALLAX SCROLL EFFECT
-// ==========================================
-
-function initParallaxEffects() {
-    gsap.to('.contact-hero__aurora', {
-        scrollTrigger: {
-            trigger: '.contact-hero',
-            start: 'top top',
-            end: 'bottom top',
-            scrub: 1
-        },
-        y: 100,
-        scale: 1.2,
-        opacity: 0.5
-    });
-}
-
-// ==========================================
-// INITIALIZE ALL ANIMATIONS
-// ==========================================
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Initialize hero
-    initContactHero();
-
-    // Initialize aurora effect
-    initAuroraEffect();
-
-    // Initialize form animations
-    initFormAnimations();
-
-    // Initialize info cards
-    initInfoCards();
-
-    // Initialize social links
-    initSocialLinks();
-
-    // Initialize form submission
-    initFormSubmission();
-
-    // Initialize input validation
-    initInputValidation();
-
-    // Initialize parallax effects
-    initParallaxEffects();
-
-    // Page entrance animation
-    gsap.from('body', {
-        opacity: 0,
-        duration: 0.5,
-        ease: 'power2.out'
+        onComplete: () => {
+            modal.classList.remove('active');
+        }
     });
 });
+
+modal.querySelector('.video-modal__overlay').addEventListener('click', () => {
+    closeModal.click();
+});
+
+dataPanels.forEach(panel => {
+    const playlistId = panel.getAttribute('data-playlist');
+    const playlist = playlists.find(p => p.id === playlistId);
+
+    panel.addEventListener('click', () => {
+        if (playlist) {
+            openModal(playlist);
+        }
+    });
+});
+
+const tl = gsap.timeline();
+
+tl.from('.dome-grid', {
+        opacity: 0,
+        scale: 0.8,
+        duration: 1.2,
+        ease: 'power2.out'
+    })
+    .from('.data-panel', {
+        x: 100,
+        opacity: 0,
+        stagger: 0.2,
+        duration: 0.8,
+        ease: 'back.out(1.7)'
+    }, '-=0.6');
+
+gsap.to('.data-panel__icon', {
+    scale: 1.1,
+    duration: 2,
+    ease: 'sine.inOut',
+    yoyo: true,
+    repeat: -1,
+    stagger: {
+        each: 0.3,
+        repeat: -1
+    }
+});
+
+ribbonRenderer.start();
