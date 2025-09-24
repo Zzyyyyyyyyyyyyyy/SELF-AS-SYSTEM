@@ -4,6 +4,7 @@ class RibbonRenderer {
         this.ctx = canvas.getContext('2d');
         this.ribbons = [];
         this.intersections = [];
+        this.intersectionCache = new Map();
         this.animationId = null;
         this.mousePos = { x: 0, y: 0 };
 
@@ -141,6 +142,8 @@ class RibbonRenderer {
             verticalRibbons.forEach(vRibbon => {
                 if (!vRibbon.animatedPoints) return;
 
+                const key = `${hRibbon.id}-${vRibbon.id}`;
+
                 let closestIntersection = null;
                 let minDistance = Infinity;
 
@@ -158,8 +161,8 @@ class RibbonRenderer {
                         if (distance < minDistance) {
                             minDistance = distance;
                             closestIntersection = {
-                                x: (hPoint.x + vPoint.x) / 2,
-                                y: (hPoint.y + vPoint.y) / 2,
+                                targetX: (hPoint.x + vPoint.x) / 2,
+                                targetY: (hPoint.y + vPoint.y) / 2,
                                 color1: hRibbon.color,
                                 color2: vRibbon.color,
                                 ribbons: [hRibbon, vRibbon],
@@ -170,6 +173,22 @@ class RibbonRenderer {
                 }
 
                 if (closestIntersection && minDistance < 80) {
+                    const cached = this.intersectionCache.get(key);
+
+                    if (cached) {
+                        const smoothing = 0.15;
+                        closestIntersection.x = cached.x + (closestIntersection.targetX - cached.x) * smoothing;
+                        closestIntersection.y = cached.y + (closestIntersection.targetY - cached.y) * smoothing;
+                    } else {
+                        closestIntersection.x = closestIntersection.targetX;
+                        closestIntersection.y = closestIntersection.targetY;
+                    }
+
+                    this.intersectionCache.set(key, {
+                        x: closestIntersection.x,
+                        y: closestIntersection.y
+                    });
+
                     this.intersections.push(closestIntersection);
                 }
             });
