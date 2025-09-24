@@ -141,10 +141,13 @@ class RibbonRenderer {
             verticalRibbons.forEach(vRibbon => {
                 if (!vRibbon.animatedPoints) return;
 
-                for (let t1 = 0; t1 <= 1; t1 += 0.1) {
+                let closestIntersection = null;
+                let minDistance = Infinity;
+
+                for (let t1 = 0; t1 <= 1; t1 += 0.05) {
                     const hPoint = this.bezierCurve(hRibbon.animatedPoints, t1);
 
-                    for (let t2 = 0; t2 <= 1; t2 += 0.1) {
+                    for (let t2 = 0; t2 <= 1; t2 += 0.05) {
                         const vPoint = this.bezierCurve(vRibbon.animatedPoints, t2);
 
                         const distance = Math.sqrt(
@@ -152,17 +155,22 @@ class RibbonRenderer {
                             Math.pow(hPoint.y - vPoint.y, 2)
                         );
 
-                        if (distance < 50) {
-                            this.intersections.push({
+                        if (distance < minDistance) {
+                            minDistance = distance;
+                            closestIntersection = {
                                 x: (hPoint.x + vPoint.x) / 2,
                                 y: (hPoint.y + vPoint.y) / 2,
                                 color1: hRibbon.color,
                                 color2: vRibbon.color,
                                 ribbons: [hRibbon, vRibbon],
-                                strength: Math.max(0.5, 1 - (distance / 50))
-                            });
+                                strength: Math.max(0.6, 1 - (distance / 80))
+                            };
                         }
                     }
+                }
+
+                if (closestIntersection && minDistance < 80) {
+                    this.intersections.push(closestIntersection);
                 }
             });
         });
