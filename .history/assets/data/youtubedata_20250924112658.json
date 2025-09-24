@@ -1,0 +1,219 @@
+// youtube-data.js
+
+export const youtubeData = {
+  meta: {
+    owner: {
+      id: "z-main",
+      displayName: "Z | Interactive Art & Code",
+      aka: ["Zhengyuan Zhao", "Z"],
+      handle: "@ZInteractive",
+      location: "New York, USA",
+      avatar: "/assets/images/avatar_z.png",
+    },
+    about: "Interactive artist (p5.js / TouchDesigner / Arduino / ComfyUI). Building data-driven art and glitch aesthetics.",
+    generatedAt: "2025-09-24T20:00:00-04:00",
+    mock: true
+  },
+
+
+  channelStats: {
+    subscribers: 1200,
+    totalViews: 185000,
+    totalVideos: 42,
+    joinDate: "2023-09-01",
+  },
+
+
+  tagsMap: {
+    tools: ["p5.js", "TouchDesigner", "ComfyUI", "Arduino", "ESP32", "Unity", "Spline"],
+    topics: ["Data Art", "Glitch", "Generative", "Interactive", "Sensor Fusion", "AI Art"],
+    sensors: ["Humidity", "Air Pressure", "Ultrasonic", "Sound", "Joystick", "WS2812B"],
+    projects: ["FutureScape", "Digital Divination", "Dream & Subconscious", "Spotify Map", "LED Clothing"]
+  },
+
+
+  playlists: [
+    {
+      id: "pl-futurescape",
+      title: "FutureScape — Environmental Data × AI Imagery",
+      description: "Humidity/temperature/pollution → AI images (ComfyUI), visualized in TouchDesigner & Arduino-driven lights.",
+      cover: "/assets/covers/pl_futurescape.jpg",
+      createdAt: "2025-04-11",
+      tags: ["Data Art", "AI Art", "ComfyUI", "TouchDesigner", "Arduino"],
+      videos: ["vid-fs-01", "vid-fs-02", "vid-fs-03"]
+    },
+    {
+      id: "pl-glitch",
+      title: "Glitch & Marquee — Spotify Data Storm",
+      description: "CRT billboard vibes. Half-anonymized Spotify fields in multi-lane marquee with WebGL glitch.",
+      cover: "/assets/covers/pl_glitch.jpg",
+      createdAt: "2025-09-20",
+      tags: ["Glitch", "p5.js", "Spotify", "Data Viz"],
+      videos: ["vid-gm-01", "vid-gm-02"]
+    },
+    {
+      id: "pl-dream",
+      title: "Dream & Subconscious — Interactive Collage",
+      description: "Surreal landscapes, memory fragments, chaos page with fracture textures. Web-based collage.",
+      cover: "/assets/covers/pl_dream.jpg",
+      createdAt: "2025-05-10",
+      tags: ["Generative", "Web", "p5.js"],
+      videos: ["vid-ds-01"]
+    }
+  ],
+
+  videos: [
+    {
+      id: "vid-fs-01",
+      title: "FutureScape v1 — Sensor → TouchDesigner → ComfyUI → 3.5\" Display",
+      shortTitle: "FutureScape v1",
+      description: "Live sensor stream (humidity/pressure) drives AI scene generation and on-device display; includes Unity inspector values.",
+      publishedAt: "2025-04-12",
+      duration: "07:32",
+      playlistId: "pl-futurescape",
+      topics: ["Data Art", "AI Art", "Sensor Fusion"],
+      tools: ["Arduino", "ESP32", "TouchDesigner", "ComfyUI", "Unity"],
+      sensors: ["Humidity", "Air Pressure"],
+      language: "EN",
+      captions: ["EN"],
+      thumbnails: {
+        default: "/assets/thumbs/fs01_360.jpg",
+        medium: "/assets/thumbs/fs01_720.jpg",
+        high: "/assets/thumbs/fs01_1080.jpg"
+      },
+      chapters: [
+        { t: "00:00", label: "Intro & System Map" },
+        { t: "01:05", label: "Arduino → Serial → Unity Inspector" },
+        { t: "03:12", label: "TouchDesigner Visual Binding" },
+        { t: "05:20", label: "ComfyUI Image Selection (3–6 options)" },
+        { t: "06:40", label: "3.5\" Display Feedback Loop" }
+      ],
+      stats: { views: 24500, likes: 890, comments: 47 },
+      assets: [{ type: "diagram", path: "/assets/docs/fs_v1_system.png" }]
+    },
+
+    {
+      id: "vid-fs-02",
+      title: "FutureScape v2 — Policy-Ready Visuals & Decision Panels",
+      shortTitle: "FutureScape v2",
+      description: "Refined UI for policymakers with scenario selection and higher-contrast visual maps (OKLCH palette).",
+      publishedAt: "2025-05-02",
+      duration: "06:11",
+      playlistId: "pl-futurescape",
+      topics: ["Data Viz", "Accessibility"],
+      tools: ["TouchDesigner", "OKLCH", "TailwindCSS"],
+      sensors: ["Humidity", "Air Pressure", "Temperature"],
+      language: "EN",
+      captions: ["EN", "ZH"],
+      thumbnails: {
+        default: "/assets/thumbs/fs02_360.jpg",
+        medium: "/assets/thumbs/fs02_720.jpg"
+      },
+      chapters: [
+        { t: "00:00", label: "Recap & Goals" },
+        { t: "00:45", label: "Color Audit (OKLCH)" },
+        { t: "02:10", label: "Panel Interactions" },
+        { t: "04:20", label: "Case Study: Coastal Region" }
+      ],
+      stats: { views: 16200, likes: 610, comments: 23 }
+    },
+
+    {
+      id: "vid-gm-01",
+      title: "Spotify Glitch Stream — Multi-Lane Marquee (p5.js + GSAP)",
+      shortTitle: "Glitch Stream",
+      description: "Half-anonymized tracks/artists flowing horizontally with CRT-style scanlines, color aberration and scan sweeps.",
+      publishedAt: "2025-09-22",
+      duration: "03:59",
+      playlistId: "pl-glitch",
+      topics: ["Glitch", "Spotify", "Typography"],
+      tools: ["p5.js", "GSAP", "TailwindCSS"],
+      language: "ZH+EN",
+      thumbnails: {
+        default: "/assets/thumbs/gm01_360.jpg",
+        medium: "/assets/thumbs/gm01_720.jpg",
+        high: "/assets/thumbs/gm01_1080.jpg"
+      },
+      chapters: [
+        { t: "00:00", label: "Style Overview" },
+        { t: "00:40", label: "De-identification Rules" },
+        { t: "01:50", label: "Lens: Track / Genre / Time-of-Day" },
+        { t: "03:10", label: "Fullscreen Record Mode" }
+      ],
+      stats: { views: 9800, likes: 402, comments: 18 }
+    },
+
+    {
+      id: "vid-gm-02",
+      title: "CRT Billboard Vibes — Color-Separated Scanlines",
+      shortTitle: "CRT Billboard",
+      description: "Shader-based chromatic aberration + scanline tear. Reduced-motion fallback with CSS filters.",
+      publishedAt: "2025-09-23",
+      duration: "04:12",
+      playlistId: "pl-glitch",
+      topics: ["Glitch", "Shaders"],
+      tools: ["p5.js", "PixiJS", "GSAP"],
+      language: "EN",
+      thumbnails: {
+        default: "/assets/thumbs/gm02_360.jpg",
+        medium: "/assets/thumbs/gm02_720.jpg"
+      },
+      chapters: [
+        { t: "00:00", label: "Why Shader over CPU Readback" },
+        { t: "01:05", label: "Color Split / Tear" },
+        { t: "02:50", label: "Performance & Fallbacks" }
+      ],
+      stats: { views: 5200, likes: 210, comments: 9 }
+    },
+
+    {
+      id: "vid-ds-01",
+      title: "Dream & Subconscious — Chaos Page (Fracture Layers)",
+      shortTitle: "Dream Chaos",
+      description: "Page 3 prototype: fracture layers, panic mode, fear reveal; constraint-based CSS/JS only.",
+      publishedAt: "2025-05-15",
+      duration: "05:06",
+      playlistId: "pl-dream",
+      topics: ["Generative", "Web"],
+      tools: ["HTML/CSS/JS", "GSAP"],
+      language: "ZH",
+      thumbnails: {
+        default: "/assets/thumbs/ds01_360.jpg"
+      },
+      chapters: [
+        { t: "00:00", label: "Visual Rationale" },
+        { t: "01:30", label: "Enter Chaos / Panic Mode" },
+        { t: "03:40", label: "Long-Press Fear Reveal" }
+      ],
+      stats: { views: 8700, likes: 355, comments: 12 }
+    }
+  ],
+  indexes: {
+    byPlaylist: {
+      "pl-futurescape": ["vid-fs-01", "vid-fs-02"],
+      "pl-glitch": ["vid-gm-01", "vid-gm-02"],
+      "pl-dream": ["vid-ds-01"]
+    },
+    byTopic: {
+      "Data Art": ["vid-fs-01", "vid-fs-02"],
+      "AI Art": ["vid-fs-01"],
+      "Glitch": ["vid-gm-01", "vid-gm-02"],
+      "Generative": ["vid-ds-01"]
+    },
+    byTool: {
+      "p5.js": ["vid-gm-01"],
+      "GSAP": ["vid-gm-01", "vid-gm-02", "vid-ds-01"],
+      "TouchDesigner": ["vid-fs-01", "vid-fs-02"],
+      "ComfyUI": ["vid-fs-01"],
+      "Arduino": ["vid-fs-01"],
+      "PixiJS": ["vid-gm-02"]
+    },
+    byProject: {
+      FutureScape: ["vid-fs-01", "vid-fs-02"],
+      "Spotify Map": [],
+      "Digital Divination": [],
+      "Dream & Subconscious": ["vid-ds-01"],
+      "Glitch Stream": ["vid-gm-01", "vid-gm-02"]
+    }
+  }
+};
