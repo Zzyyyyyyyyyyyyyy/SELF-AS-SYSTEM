@@ -1,13 +1,125 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Self As System</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar Heatwave</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="styles/page-1.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+    <nav class="nav">
+        <div class="nav__container">
+            <a href="index.html" class="nav__logo">
+                <span class="nav__logo-text">Self As System</span>
+            </a>
+            <ul class="nav__menu" id="navMenu">
+                <li class="nav__item"><a href="index.html" class="nav__link nav__link--active">Calendar Heatwave</a></li>
+                <li class="nav__item"><a href="page-2.html" class="nav__link">Things & Tunes Gallery</a></li>
+                <li class="nav__item"><a href="page-3.html" class="nav__link">Flow of Desire</a></li>
+            </ul>
+            <button class="nav__toggle" id="navToggle" aria-label="Toggle navigation">
+                <span class="nav__toggle-bar"></span>
+                <span class="nav__toggle-bar"></span>
+                <span class="nav__toggle-bar"></span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="calendar-heatwave">
+        <header class="calendar__header">
+            <h1 class="calendar__title">Calendar Heatwave</h1>
+            <div class="calendar__year">2024</div>
+        </header>
+
+        <div class="calendar__grid" id="calendarGrid"></div>
+
+        <div class="calendar__legend">
+            <div class="calendar__legend-item">
+                <span class="calendar__legend-label">💰 Spending:</span>
+                <div class="calendar__legend-gradient calendar__legend-gradient--spending">
+                    <span>Cool</span>
+                    <span>Hot</span>
+                </div>
+            </div>
+            <div class="calendar__legend-item">
+                <span class="calendar__legend-label">🎵 Listening:</span>
+                <div class="calendar__legend-gradient calendar__legend-gradient--listening">
+                    <span>Dim</span>
+                    <span>Bright</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tooltip" class="calendar__tooltip" style="display: none;"></div>
+
+    <div class="game-controls">
+        <button id="treasure-hunt-btn" class="game-btn game-btn--treasure">
+            🏆 寻宝游戏
+        </button>
+        <button id="prediction-game-btn" class="game-btn game-btn--prediction">
+            🎲 预测游戏
+        </button>
+        <button id="rainbow-trail-btn" class="game-btn game-btn--rainbow">
+            🌈 彩虹轨迹
+        </button>
+    </div>
+
+    <script src="scripts/common.js"></script>
+    <script src="scripts/page-1.js"></script>
+    <script src="scripts/calendar-games.js"></script>
+    <script src="scripts/calendar-effects.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const treasureBtn = document.getElementById('treasure-hunt-btn');
+            const predictionBtn = document.getElementById('prediction-game-btn');
+            const rainbowBtn = document.getElementById('rainbow-trail-btn');
+
+            let treasureGame = null;
+            let predictionGame = null;
+            let rainbowTrail = null;
+            let timeMachine = null;
+
+            treasureBtn.addEventListener('click', () => {
+                if (!treasureGame) {
+                    treasureGame = new CalendarGames.TreasureHunt();
+                    treasureGame.start();
+                    treasureBtn.classList.add('game-btn--active');
+                }
+            });
+
+            predictionBtn.addEventListener('click', () => {
+                if (!predictionGame) {
+                    predictionGame = new CalendarGames.PredictionGame();
+                    window.currentGame = predictionGame;
+                    predictionGame.start();
+                    predictionBtn.classList.add('game-btn--active');
+                }
+            });
+
+            rainbowBtn.addEventListener('click', () => {
+                if (!rainbowTrail) {
+                    rainbowTrail = new CalendarEffects.RainbowTrail();
+                    rainbowTrail.init();
+                    rainbowBtn.classList.add('game-btn--active');
+                } else {
+                    rainbowTrail.destroy();
+                    rainbowTrail = null;
+                    rainbowBtn.classList.remove('game-btn--active');
+                }
+            });
+
+            timeMachine = new CalendarEffects.TimeMachine();
+            timeMachine.init();
+        });
+    </script>
+</body>
 </html>
